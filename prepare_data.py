@@ -62,11 +62,21 @@ def download_images():
                                             cache_subdir=os.path.abspath('.'),
                                             origin='http://images.cocodataset.org/zips/train2014.zip',
                                             extract=True)
-        PATH = os.path.dirname(image_zip) + image_folder
+        train_PATH = os.path.dirname(image_zip) + image_folder
         os.remove(image_zip)
     else:
-        PATH = os.path.abspath('.') + image_folder
-    return PATH
+        train_PATH = os.path.abspath('.') + image_folder
+    image_folder = '/val2014/'
+    if not os.path.exists(os.path.abspath('.') + image_folder):
+        image_zip = tf.keras.utils.get_file('val2014.zip',
+                                            cache_subdir=os.path.abspath('.'),
+                                            origin='http://images.cocodataset.org/zips/val2014.zip',
+                                            extract=True)
+        val_PATH = os.path.dirname(image_zip) + image_folder
+        os.remove(image_zip)
+    else:
+        val_PATH = os.path.abspath('.') + image_folder
+    return train_PATH, val_PATH
 
 def prepare_image_inputs(cfg, model, img_list):
     with torch.no_grad():

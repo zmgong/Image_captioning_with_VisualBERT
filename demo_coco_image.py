@@ -20,15 +20,16 @@ def main():
     if os.path.exists("visual_embeds_test.h5"):
         os.remove("visual_embeds_test.h5")
 
-    PATH = download_images()
+    train_PATH, val_PATH = download_images()
     cfg, model = models.get_mask_rcnn_model()
-    with open('annotations/captions_train2014.json') as f:
+    with open('annotations/captions_val2014.json') as f:
         a = json.load(f)
     listOfAnn = a['annotations'][0:1000]
     image_path_to_caption = {}
     for val in listOfAnn:
         caption = val['caption']
-        image_path = PATH + 'COCO_train2014_' + '%012d.jpg' % (val['image_id'])
+        image_path = val_PATH + 'COCO_val2014_' + '%012d.jpg' % (val['image_id'])
+        # print(image_path)
         image_path_to_caption[image_path] = caption
     fileName = "visual_embeds_test"
     save_visual_embeds(cfg, model, image_path_to_caption, fileName)
@@ -36,7 +37,7 @@ def main():
     path_caption_dict = collections.defaultdict(list)
     for val in listOfAnn:
         caption = val['caption']
-        image_path = PATH + 'COCO_train2014_' + '%012d.jpg' % (val['image_id'])
+        image_path = val_PATH + 'COCO_val2014_' + '%012d.jpg' % (val['image_id'])
         path_caption_dict[image_path].append(caption)
 
     train_path_caption_dict, val_path_caption_dict = sample_from_dict(path_caption_dict, 10, 20)
