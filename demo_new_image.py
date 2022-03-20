@@ -1,8 +1,8 @@
 import os
 import matplotlib.pyplot as plt
-import nltk
+# import nltk
 import torch
-
+import pickle
 import models
 from extract_visual_embed import load_image, get_features, featureToVem
 from mask_and_decode_func import greedy_decode
@@ -11,8 +11,16 @@ from prepare_data import prepare_image_inputs, download_images
 
 def main():
     image_folder_path = download_images()
-    nltk.download('punkt')
-    vocab = models.build_vocab(json='annotations/captions_train2014.json', threshold=5)
+    # nltk.download('punkt')
+    vocab = None
+    if not os.path.exists("vocab.pkl"):
+        vocab = models.build_vocab(json='annotations/captions_train2014.json', threshold=5)
+        with open('vocab.pkl', 'wb') as outp:
+            pickle.dump(vocab, outp, pickle.HIGHEST_PROTOCOL)
+    else:
+        with open('vocab.pkl', 'rb') as inp:
+            vocab = pickle.load(inp)
+    print(vocab)
     bertload = models.VisualBertTransformer(num_decoder_layers=6,
                                             emb_size=768, nhead=8,
                                             tgt_vocab_size=(len(vocab) + 3)).cuda()
