@@ -52,7 +52,6 @@ def main():
         time2 = time.time()
         print("Response in:" + str(time2-time1))
         plt.imshow(img)
-
         plt.text(0, -1, preds, bbox=dict(fill=False, edgecolor='red', linewidth=2))
         plt.axis('off')
         plt.show()
