@@ -10,6 +10,7 @@ from detectron2.structures.image_list import ImageList
 from detectron2.data import transforms as T
 from torch.utils.data import Dataset, DataLoader
 
+
 class CocoCaptionDataset(Dataset):
     def __init__(self, path_caption_dict, vocab, h5FileName):
         self.data = list(path_caption_dict.items())
@@ -28,7 +29,7 @@ class CocoCaptionDataset(Dataset):
         # set_list = list(h5f[set_dir])
         # embed = self.visual_embed(path)
 
-         # Convert caption (string) to word ids.
+        # Convert caption (string) to word ids.
         tokens = nltk.tokenize.word_tokenize(str(caption[0]).lower())
         caption = []
         caption.append(self.vocab('<start>'))
@@ -38,6 +39,7 @@ class CocoCaptionDataset(Dataset):
 
         return embed, target, path
 
+
 def sample_from_dict(d, train_size, val_size):
     sample = train_size + val_size
     keys = random.sample(list(d), sample)
@@ -45,6 +47,7 @@ def sample_from_dict(d, train_size, val_size):
     tkeys, tvals = keys[:train_size], values[:train_size]
     vkeys, vvals = keys[train_size:], values[train_size:]
     return dict(zip(tkeys, tvals)), dict(zip(vkeys, vvals))
+
 
 def download_images():
     annotation_folder = '/annotations/'
@@ -77,6 +80,18 @@ def download_images():
     else:
         val_PATH = os.path.abspath('.') + image_folder
     return train_PATH, val_PATH
+
+
+def download_captions():
+    annotation_folder = '/annotations/'
+    if not os.path.exists(os.path.abspath('.') + annotation_folder):
+        annotation_zip = tf.keras.utils.get_file('captions.zip',
+                                                 cache_subdir=os.path.abspath('.'),
+                                                 origin='http://images.cocodataset.org/annotations/annotations_trainval2014.zip',
+                                                 extract=True)
+        annotation_file = os.path.dirname(annotation_zip) + '/annotations/captions_train2014.json'
+        os.remove(annotation_zip)
+
 
 def prepare_image_inputs(cfg, model, img_list):
     with torch.no_grad():
